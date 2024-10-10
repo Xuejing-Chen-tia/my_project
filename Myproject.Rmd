@@ -1,0 +1,12 @@
+---
+title: "My project"
+author: "Tiana"
+date: "2024-10-03"
+output: "github_document"
+---
+```{r}
+library(haven) #to download the package
+library(dplyr) #recode variable
+library(ggplot2)
+```
+
