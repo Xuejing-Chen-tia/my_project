@@ -1,21 +1,65 @@
----
+--- 
 title: "My project"
-author: "Tiana"
+# author: "Tiana Chen"
 date: "2024-10-03"
 output: "github_document"
 ---
 
 # load packages and dataset
 ```{r}
+# Set a CRAN mirror before installing packages
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Install and load the moments package
+install.packages("moments")
+library(moments)
 library(haven) #to download the package
-library(dplyr) #recode variable
+library(dplyr) #re-code variable
 library(ggplot2)
 
 #hope it's the new one, yes it is 
-load ("/Users/chenxuejing/Downloads/ICPSR_36850/DS0005/36850-0005-Data.rda")
-dataset <- da36850.0005
-rm(da36850.0005)
-
-
+load ("/Users/chenxuejing/Downloads/ICPSR_36850/DS0003/36850-0003-Data.rda")
+dataset <- da36850.0003
+rm(da36850.0003)
+dataset <- dataset %>%
+  select(PSYDIST2, SLET2)
 ```
 
+```{r}
+#check normality assumption
+# Histogram
+ggplot(dataset, aes(x = PSYDIST2)) +
+  geom_histogram(binwidth = 0.5, fill = 'blue', color = 'black') +
+  ggtitle('Histogram of PSYDIST2') +
+  xlab('PSYDIST2') +
+  ylab('Frequency')
+
+#check equal variance assumption
+# Install and load car package if not already installed
+install.packages("car")
+library(car)
+
+# Levene's Test
+leveneTest(PSYDIST2 ~ factor(SLET2), data = dataset)
+ggplot(dataset, aes(x = factor(SLET2), y = PSYDIST2)) +
+  geom_boxplot(fill = 'lightblue') +
+  ggtitle('Boxplot of PSYDIST2 by SLET2') +
+  xlab('SLET2') +
+  ylab('PSYDIST2')
+
+dataset$PSYDIST2_log <- log(dataset$PSYDIST2)
+
+#check assumptions for psydist2_log
+skewness(dataset$PSYDIST2_log, na.rm = TRUE)
+kurtosis(dataset$PSYDIST2_log, na.rm = TRUE)
+
+ggplot(dataset, aes(x = factor(SLET2), y = PSYDIST2_log)) +
+  geom_boxplot(fill = 'lightblue') +
+  ggtitle('Boxplot of PSYDIST2_log by SLET2') +
+  xlab('SLET2') +
+  ylab('PSYDIST2')
+```
+
+```{r}
+
+```
