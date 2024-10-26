@@ -1,7 +1,7 @@
 --- 
 title: "My project"
 # author: "Tiana Chen"
-date: "2024-10-03"
+date: "2024-10-24"
 output: "github_document"
 ---
 
@@ -22,7 +22,7 @@ load ("/Users/chenxuejing/Downloads/ICPSR_36850/DS0003/36850-0003-Data.rda")
 dataset <- da36850.0003
 rm(da36850.0003)
 dataset <- dataset %>%
-  select(PSYDIST2, SLET2)
+  select(PSYDIST2, SLET2, DEMGEN2, DEMRA2013)
 ```
 
 ```{r}
@@ -39,7 +39,7 @@ ggplot(dataset, aes(x = PSYDIST2)) +
 install.packages("car")
 library(car)
 
-# Levene's Test
+# Levene's Test for equal variance
 leveneTest(PSYDIST2 ~ factor(SLET2), data = dataset)
 ggplot(dataset, aes(x = factor(SLET2), y = PSYDIST2)) +
   geom_boxplot(fill = 'lightblue') +
@@ -49,7 +49,7 @@ ggplot(dataset, aes(x = factor(SLET2), y = PSYDIST2)) +
 
 dataset$PSYDIST2_log <- log(dataset$PSYDIST2)
 
-#check assumptions for psydist2_log
+#check normality assumptions for psydist2_log
 skewness(dataset$PSYDIST2_log, na.rm = TRUE)
 kurtosis(dataset$PSYDIST2_log, na.rm = TRUE)
 
@@ -61,5 +61,71 @@ ggplot(dataset, aes(x = factor(SLET2), y = PSYDIST2_log)) +
 ```
 
 ```{r}
+#lab8 
+# run the substantive analysis to test my research question. (Correlation model with gender interaction)
+library(bruceR)
+Corr(dataset)
+
+# there is a significant correlation between my two IVs. Multicollinearity occurs. Try to solve it by standardizing my variables:
+# Standardize the 'stressful events' variable (SLET2)
+dataset$SLET2_standardized <- scale(dataset$SLET2)
+
+# Convert gender variable (DEMGEN2) to numeric, 0 = male; 1 = female, then standardize it
+dataset$DEMGEN2 <- as.numeric(dataset$DEMGEN2)
+dataset$DEMGEN2 <- ifelse(dataset$DEMGEN2 == 2, 1, 0)
+
+# Check the result, 332 males and 401 females, then standardize it
+table(dataset$DEMGEN2)
+dataset$DEMGEN2_standardized <- scale(dataset$DEMGEN2)
+
+# standardize dependent variable (PSYDIST2) if needed 
+dataset$PSYDIST2_standardized <- scale(dataset$PSYDIST2)
+
+# View the standardized data
+head(data)
+
+#rename the standardized dataset as "data1"
+data1 <- dataset %>% 
+  select(SLET2_standardized, DEMGEN2_standardized, PSYDIST2_standardized)
+Corr(data1)
+
+#moderation:
+PROCESS(dataset, y = "PSYDIST2", x = "SLET2", mods = c("DEMGEN2"))
+
+#check if there's a missing value of gender, and there's one row that has missing values 
+sum(is.na(dataset$DEMGEN2))
+dataset <- dataset[!is.na(dataset$DEMGEN2), ]
+
+
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
+
+# Plot the interaction effect of stressful events and gender on psychological distress
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) + 
+  geom_smooth(method = "lm") +  facet_wrap(~DEMGEN2) +
+  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
+  xlab("Stressful Events (SLET2)") +
+  ylab("Psychological Distress (PSYDIST2)") +
+  scale_color_discrete(name = "Gender", labels = c("Male", "Female"))
+
+```
+
+```{r}
+#explanatory research
+library(bruceR)
+Corr(dataset)
+
+#Moderation:
+PROCESS(dataset, y = "PSYDIST2", x = "SLET2", mods = c("DEMRA2013"))
+
+#visualize my data
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
+
+# Plot the interaction effect of stressful events and gender on psychological distress
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) + 
+  geom_smooth(method = "lm") +  facet_wrap(~DEMRA2013) +
+  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
+  xlab("Stressful Events (SLET2)") +
+  ylab("Psychological Distress (PSYDIST2)") +
+  scale_color_discrete(name = "Asian ethinicity", labels = c("Non-Asian", "Asian"))
 
 ```
