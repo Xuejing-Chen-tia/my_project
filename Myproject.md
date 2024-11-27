@@ -14,7 +14,7 @@ install.packages("moments")
 
     ## 
     ## The downloaded binary packages are in
-    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpKqrp6i/downloaded_packages
+    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpP9K9vj/downloaded_packages
 
 ``` r
 library(moments)
@@ -80,7 +80,7 @@ install.packages("car")
 
     ## 
     ## The downloaded binary packages are in
-    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpKqrp6i/downloaded_packages
+    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpP9K9vj/downloaded_packages
 
 ``` r
 library(car)
@@ -602,8 +602,18 @@ sum(is.na(dataset$DEMGEN2))
 
 ``` r
 dataset <- dataset[!is.na(dataset$DEMGEN2), ]
+```
 
+``` r
+model<-lm(PSYDIST2 ~ SLET2 + DEMGEN2 + DEMRA2013, data = dataset)
 
+#step 2: check the assumptions
+check_model(model)
+```
+
+![](Myproject_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
 ```
 
@@ -615,14 +625,14 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + t
     ## Warning: Removed 3 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](Myproject_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
+![](Myproject_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 # Plot the interaction effect of stressful events and gender on psychological distress
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) + 
   geom_smooth(method = "lm") +  facet_wrap(~DEMGEN2) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
-  xlab("Stressful Events (SLET2)") +
+  ggtitle("Interaction of SLET2 and DEMGEN2 on Psychological Distress (PSYDIST2)") +
+  xlab("Numbers of Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
   scale_color_discrete(name = "Gender", labels = c("Male", "Female"))
 ```
@@ -632,7 +642,7 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) +
     ## Warning: Removed 3 rows containing non-finite outside the scale range
     ## (`stat_smooth()`).
 
-![](Myproject_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
+![](Myproject_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
 #explanatory research
@@ -998,7 +1008,7 @@ Corr(dataset)
     ## DEMGEN2_standardized-PSYDIST2_standardizd   0.17 [ 0.10,  0.24] <.001 *** 730
     ## ─────────────────────────────────────────────────────────────────────────────
 
-![](Myproject_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](Myproject_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
     ## Correlation matrix is displayed in the RStudio `Plots` Pane.
 
@@ -1087,13 +1097,13 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + t
     ## Warning: Removed 3 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](Myproject_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](Myproject_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 ``` r
 # Plot the interaction effect of stressful events and gender on psychological distress
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) + 
   geom_smooth(method = "lm") +  facet_wrap(~DEMRA2013) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
+  ggtitle("Interaction of Stressful Events (SLET2) and Asian ethinicity (DEMRA2013) on Psychological Distress (PSYDIST2)") +
   xlab("Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
   scale_color_discrete(name = "Asian ethinicity", labels = c("Non-Asian", "Asian"))
@@ -1104,7 +1114,7 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) +
     ## Warning: Removed 3 rows containing non-finite outside the scale range
     ## (`stat_smooth()`).
 
-![](Myproject_files/figure-gfm/unnamed-chunk-4-3.png)<!-- --> \# Test
+![](Myproject_files/figure-gfm/unnamed-chunk-6-3.png)<!-- --> \# Test
 the DV: Non-psychological distress scale (PSYDIST2: Mean of
 KESPDS201-KESPDS206) \# Because this variable has 6 items, we shall run
 the reliability and factor analysis.
@@ -1202,7 +1212,7 @@ EFA(dataset, "KESPDS", 201:206, method = "pa", plot.scree = TRUE, nfactors = c("
     ## Communality = Sum of Squared (SS) Factor Loadings
     ## (Uniqueness = 1 - Communality)
 
-![](Myproject_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](Myproject_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 # Test the IV: Stressful events (SLET2: The sum of SLE01-SLE13)
 

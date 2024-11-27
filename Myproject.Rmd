@@ -93,15 +93,25 @@ PROCESS(dataset, y = "PSYDIST2", x = "SLET2", mods = c("DEMGEN2"))
 #check if there's a missing value of gender, and there's one row that has missing values 
 sum(is.na(dataset$DEMGEN2))
 dataset <- dataset[!is.na(dataset$DEMGEN2), ]
+```
 
 
+```{r}
+model<-lm(PSYDIST2 ~ SLET2 + DEMGEN2 + DEMRA2013, data = dataset)
+
+#step 2: check the assumptions
+check_model(model)
+```
+
+
+```{r}
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
 
 # Plot the interaction effect of stressful events and gender on psychological distress
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) + 
   geom_smooth(method = "lm") +  facet_wrap(~DEMGEN2) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
-  xlab("Stressful Events (SLET2)") +
+  ggtitle("Interaction of SLET2 and DEMGEN2 on Psychological Distress (PSYDIST2)") +
+  xlab("Numbers of Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
   scale_color_discrete(name = "Gender", labels = c("Male", "Female"))
 
@@ -120,7 +130,7 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + t
 # Plot the interaction effect of stressful events and gender on psychological distress
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) + 
   geom_smooth(method = "lm") +  facet_wrap(~DEMRA2013) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Gender (DEMGEN2) on Psychological Distress (PSYDIST2)") +
+  ggtitle("Interaction of Stressful Events (SLET2) and Asian ethinicity (DEMRA2013) on Psychological Distress (PSYDIST2)") +
   xlab("Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
   scale_color_discrete(name = "Asian ethinicity", labels = c("Non-Asian", "Asian"))
