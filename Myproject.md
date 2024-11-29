@@ -14,7 +14,7 @@ install.packages("moments")
 
     ## 
     ## The downloaded binary packages are in
-    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpP9K9vj/downloaded_packages
+    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpurMu3b/downloaded_packages
 
 ``` r
 library(moments)
@@ -80,7 +80,7 @@ install.packages("car")
 
     ## 
     ## The downloaded binary packages are in
-    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpP9K9vj/downloaded_packages
+    ##  /var/folders/qv/j1c01f7x2l9ctjb7ps7yhmsr0000gn/T//RtmpurMu3b/downloaded_packages
 
 ``` r
 library(car)
@@ -97,7 +97,8 @@ library(car)
 
 ``` r
 #hope it's the new one, yes it is 
-load ("/Users/chenxuejing/Downloads/ICPSR_36850/DS0003/36850-0003-Data.rda")
+load ("/Users/chenxuejing/Desktop/ICPSR_36850/DS0003/36850-0003-Data.rda")
+
 dataset <- da36850.0003
 rm(da36850.0003)
 dataset <- dataset %>%
@@ -607,11 +608,45 @@ dataset <- dataset[!is.na(dataset$DEMGEN2), ]
 ``` r
 model<-lm(PSYDIST2 ~ SLET2 + DEMGEN2 + DEMRA2013, data = dataset)
 
-#step 2: check the assumptions
+#check the assumptions
 check_model(model)
 ```
 
 ![](Myproject_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+model_summary(model)
+```
+
+    ## 
+    ## Model Summary
+    ## 
+    ## ──────────────────────────────
+    ##                   (1) PSYDIST2
+    ## ──────────────────────────────
+    ## (Intercept)         1.478 *** 
+    ##                    (0.051)    
+    ## SLET2               0.152 *** 
+    ##                    (0.009)    
+    ## DEMGEN2             0.193 *** 
+    ##                    (0.054)    
+    ## DEMRA2013(1) Yes    0.007     
+    ##                    (0.126)    
+    ## ──────────────────────────────
+    ## R^2                 0.292     
+    ## Adj. R^2            0.289     
+    ## Num. obs.         730         
+    ## ──────────────────────────────
+    ## Note. * p < .05, ** p < .01, *** p < .001.
+    ## 
+    ## # Check for Multicollinearity
+    ## 
+    ## Low Correlation
+    ## 
+    ##       Term  VIF    VIF 95% CI Increased SE Tolerance Tolerance 95% CI
+    ##      SLET2 1.02 [1.00,  1.66]         1.01      0.98     [0.60, 1.00]
+    ##    DEMGEN2 1.01 [1.00,  3.40]         1.01      0.99     [0.29, 1.00]
+    ##  DEMRA2013 1.01 [1.00, 39.45]         1.00      0.99     [0.03, 1.00]
 
 ``` r
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
@@ -629,12 +664,14 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + t
 
 ``` r
 # Plot the interaction effect of stressful events and gender on psychological distress
-ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) + 
-  geom_smooth(method = "lm") +  facet_wrap(~DEMGEN2) +
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~DEMGEN2) +
   ggtitle("Interaction of SLET2 and DEMGEN2 on Psychological Distress (PSYDIST2)") +
   xlab("Numbers of Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
-  scale_color_discrete(name = "Gender", labels = c("Male", "Female"))
+  scale_color_discrete(name = "Gender", labels = c("Male", "Female")) +
+  theme_classic() # White background with only axes and no gridlines
 ```
 
     ## `geom_smooth()` using formula = 'y ~ x'
@@ -1101,12 +1138,14 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + t
 
 ``` r
 # Plot the interaction effect of stressful events and gender on psychological distress
-ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) + 
-  geom_smooth(method = "lm") +  facet_wrap(~DEMRA2013) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Asian ethinicity (DEMRA2013) on Psychological Distress (PSYDIST2)") +
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~DEMRA2013) +
+  ggtitle("Interaction of SLET2 and DEMRA2013 on Psychological Distress (PSYDIST2)") +
   xlab("Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
-  scale_color_discrete(name = "Asian ethinicity", labels = c("Non-Asian", "Asian"))
+  scale_color_discrete(name = "Ethnicity", labels = c("Non-Asian", "Asian")) +
+  theme_classic() # This applies a white background with only axes and no gridlines
 ```
 
     ## `geom_smooth()` using formula = 'y ~ x'
@@ -1114,10 +1153,32 @@ ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) +
     ## Warning: Removed 3 rows containing non-finite outside the scale range
     ## (`stat_smooth()`).
 
-![](Myproject_files/figure-gfm/unnamed-chunk-6-3.png)<!-- --> \# Test
-the DV: Non-psychological distress scale (PSYDIST2: Mean of
-KESPDS201-KESPDS206) \# Because this variable has 6 items, we shall run
-the reliability and factor analysis.
+![](Myproject_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+
+``` r
+data2 <- dataset %>% 
+  select(SLET2, DEMRA2013, PSYDIST2)
+Corr(data2)
+```
+
+    ## NOTE: `DEMRA2013` transformed to numeric.
+    ## 
+    ## Pearson's r and 95% confidence intervals:
+    ## ──────────────────────────────────────────────────────
+    ##                         r       [95% CI]     p       N
+    ## ──────────────────────────────────────────────────────
+    ## SLET2-DEMRA2013     -0.09 [-0.16, -0.02]  .017 *   731
+    ## SLET2-PSYDIST2       0.53 [ 0.47,  0.58] <.001 *** 730
+    ## DEMRA2013-PSYDIST2  -0.04 [-0.11,  0.03]  .262     730
+    ## ──────────────────────────────────────────────────────
+
+![](Myproject_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->
+
+    ## Correlation matrix is displayed in the RStudio `Plots` Pane.
+
+# Test the DV: Non-psychological distress scale (PSYDIST2: Mean of KESPDS201-KESPDS206)
+
+# Because this variable has 6 items, we shall run the reliability and factor analysis.
 
 ``` r
 #Convert items (KESPDS201-KESPDS206) to numeric: 1 = none of the time, 2 = a little of the time, 3 = some of the time, 4 = most of the time, 5 = all of the time

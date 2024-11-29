@@ -22,7 +22,8 @@ install.packages("car")
 library(car)
 
 #hope it's the new one, yes it is 
-load ("/Users/chenxuejing/Downloads/ICPSR_36850/DS0003/36850-0003-Data.rda")
+load ("/Users/chenxuejing/Desktop/ICPSR_36850/DS0003/36850-0003-Data.rda")
+
 dataset <- da36850.0003
 rm(da36850.0003)
 dataset <- dataset %>%
@@ -99,8 +100,10 @@ dataset <- dataset[!is.na(dataset$DEMGEN2), ]
 ```{r}
 model<-lm(PSYDIST2 ~ SLET2 + DEMGEN2 + DEMRA2013, data = dataset)
 
-#step 2: check the assumptions
+#check the assumptions
 check_model(model)
+
+model_summary(model)
 ```
 
 
@@ -108,12 +111,15 @@ check_model(model)
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
 
 # Plot the interaction effect of stressful events and gender on psychological distress
-ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) + 
-  geom_smooth(method = "lm") +  facet_wrap(~DEMGEN2) +
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMGEN2))) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~DEMGEN2) +
   ggtitle("Interaction of SLET2 and DEMGEN2 on Psychological Distress (PSYDIST2)") +
   xlab("Numbers of Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
-  scale_color_discrete(name = "Gender", labels = c("Male", "Female"))
+  scale_color_discrete(name = "Gender", labels = c("Male", "Female")) +
+  theme_classic() # White background with only axes and no gridlines
+
 
 ```
 
@@ -128,12 +134,18 @@ PROCESS(dataset, y = "PSYDIST2", x = "SLET2", mods = c("DEMRA2013"))
 ggplot(dataset, aes(x = SLET2, y = PSYDIST2)) + geom_point() + geom_smooth() + theme_bruce()
 
 # Plot the interaction effect of stressful events and gender on psychological distress
-ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) + 
-  geom_smooth(method = "lm") +  facet_wrap(~DEMRA2013) +
-  ggtitle("Interaction of Stressful Events (SLET2) and Asian ethinicity (DEMRA2013) on Psychological Distress (PSYDIST2)") +
+ggplot(dataset, aes(x = SLET2, y = PSYDIST2, color = factor(DEMRA2013))) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~DEMRA2013) +
+  ggtitle("Interaction of SLET2 and DEMRA2013 on Psychological Distress (PSYDIST2)") +
   xlab("Stressful Events (SLET2)") +
   ylab("Psychological Distress (PSYDIST2)") +
-  scale_color_discrete(name = "Asian ethinicity", labels = c("Non-Asian", "Asian"))
+  scale_color_discrete(name = "Ethnicity", labels = c("Non-Asian", "Asian")) +
+  theme_classic() # This applies a white background with only axes and no gridlines
+
+data2 <- dataset %>% 
+  select(SLET2, DEMRA2013, PSYDIST2)
+Corr(data2)
 
 ```
 # Test the DV: Non-psychological distress scale (PSYDIST2: Mean of KESPDS201-KESPDS206)
